@@ -4,7 +4,7 @@ from .models import *
 
 @admin.register(PartnerApplication)
 class AdminUser(admin.ModelAdmin):
-    list_display = 'id', 'app_type', 'company_name', 'full_name', 'phone'
+    list_display = ('id', 'app_type', 'company_name', 'full_name', 'phone')
 
 
 @admin.register(PartnerApplicationObjectImage)
@@ -24,7 +24,7 @@ class AdminCertificate(admin.ModelAdmin):
 
 @admin.register(User)
 class AdminUser(admin.ModelAdmin):
-    list_display = 'id',
+    list_display = ('id', )
 
 
 @admin.register(UserLoc)
@@ -49,7 +49,8 @@ class AdminVacancyApplication(admin.ModelAdmin):
 
 @admin.register(Category)
 class AdminCategory(admin.ModelAdmin):
-    list_display = 'id',
+    list_display = ('id', "name", 'order')
+    ordering = ['order']
 
 
 @admin.register(Product)
@@ -77,7 +78,7 @@ class AdminCareer(admin.ModelAdmin):
     list_display = 'id',
 
 
-@admin.register(New)
+@admin.register(News)
 class AdminNew(admin.ModelAdmin):
     list_display = 'id',
 

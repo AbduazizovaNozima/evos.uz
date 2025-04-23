@@ -27,15 +27,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CategoryProductMixedSerializer(serializers.ModelSerializer):
-    # products_list = serializers.SerializerMethodField()
-    #
-    # def get_products_list(self, obj):
-    #     # queryset = models.Product.objects.filter(
-    #     #     category=obj
-    #     # )
-    #     queryset = obj.products.filter()
-    #     serializer = ProductSerializer(queryset, many=True)
-    #     return serializer.data
+    products_list = serializers.SerializerMethodField()
+
+    def get_products_list(self, obj):
+        # queryset = models.Product.objects.filter(
+        #     category=obj
+        # )
+        queryset = obj.products.filter()
+        serializer = ProductSerializer(queryset, many=True)
+        return serializer.data
 
     class Meta:
         model = models.Category
