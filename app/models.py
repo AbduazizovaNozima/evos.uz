@@ -1,5 +1,5 @@
-
 from django.db import models
+from ckeditor.fields import RichTextField
 
 class PartnerApplication(models.Model):
 
@@ -27,16 +27,19 @@ class Location(models.Model):
         ('namangan', 'NAMANGAN'),
         ('jizzax', 'JIZZAX'),
         ('sirdaryo', 'SIRDARYO'),
-        ('surxandaryo', 'SURXANDARYO'),
+        ('surhandaryo', 'SURXANDARYO'),
         ('qashqadaryo', 'QASHQADARYO'),
-        ('xorazm', 'XORAZM'),
+        ('xorazm', 'XORAZM')
     ]
 
     lat = models.CharField(max_length=255)
     lon = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = RichTextField()
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
+
+    def __str__(self):
+        return self.region
 
 
 class PartnerApplicationObject(models.Model):
@@ -68,16 +71,19 @@ class PartnerApplicationObjectImage(models.Model):
 
 class User(models.Model):
     full_name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.full_name
 
 
-class UserLoc(models.Model):
+class UserLocation(models.Model):
     lat = models.CharField(max_length=255)
     lon = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        related_name='userLoc', null=True, blank=True
+        related_name='user_locations', null=True, blank=True
     )
 
 
@@ -85,19 +91,19 @@ class UserCard(models.Model):
     user = models.CharField(max_length=255)
     card_ud = models.CharField(max_length=255)
     card_en = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = RichTextField()
     status = models.CharField(max_length=255)
 
 
 class Vacancy(models.Model):
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = RichTextField()
     body = models.CharField(max_length=255)
 
 
 class VacancyApplication(models.Model):
     full_name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, unique=True)
     cv = models.FileField(upload_to="obj_cv/")
     vacancy = models.ForeignKey(
         Vacancy, on_delete=models.CASCADE,
@@ -116,12 +122,7 @@ class Category(models.Model):
     order = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.name}"
-
-    # @property
-    # def products_list(self):
-    #     data = self.products.all()
-    #     return data.values("id", "name")
+        return f"{self.id}-{self.name}"
 
 
 class Product(models.Model):
@@ -135,9 +136,8 @@ class Product(models.Model):
         related_name='products', null=True, blank=True
     )
 
-    @property
-    def category_name(self):
-        return self.category.name
+    def __str__(self):
+        return self.name
 
 
 class Order(models.Model):
@@ -145,15 +145,18 @@ class Order(models.Model):
     amount = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.user
+
 
 class OrderProduct(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE,
-        related_name='orderProduct', null=True, blank=True
+        related_name='order_products', null=True, blank=True
     )
     order = models.ForeignKey(
         Order, on_delete=models.CASCADE,
-        related_name='order', null=True, blank=True
+        related_name='orders', null=True, blank=True
     )
     amount = models.CharField(max_length=255)
 
@@ -168,15 +171,19 @@ class Branch(models.Model):
     lat = models.CharField(max_length=255)
 
 
-class News(models.Model):
+class New(models.Model):
     title = models.CharField(max_length=255)
     poster = models.ImageField(upload_to='obj_images/')
     body = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)
+    objects = models.Manager()
 
 
 class AboutUs(models.Model):
-    key = models.CharField(max_length=255)
+    key = models.ImageField(upload_to='obj_images/')
     value = models.CharField(max_length=255)
+    objects = models.Manager()
 
 
 class History(models.Model):
@@ -198,7 +205,7 @@ class Feedback(models.Model):
 
 
 class UserEmail(models.Model):
-    email = models.EmailField(max_length=254)
+    email = models.EmailField()
 
 
 class Certificate(models.Model):
